@@ -4,14 +4,11 @@ import numpy as np
 def calibrate_data(data_dict, metadata_dict):
 
     channels = ['1', '2', '11']
-    bg_low_gate = 1500
-    bg_high_gate = 1600
 
     for channel in channels:
-        total_profiles = np.size(data_dict[channel]['DP']['data'][:, 0])
-        for profile in range(total_profiles):
-            print(profile)
-            background = np.mean(data_dict[channel]['DP']['data'][profile, bg_low_gate:bg_high_gate])
-            data_dict[channel]['DP']['data'][profile, :] = data_dict[channel]['DP']['data'][profile, :] - background
+        delta_range = float(data_dict[channel]['one_door_range_metres'])
+        offset_range = float(data_dict[channel]['offset_range'])
+        total_ranges = np.size(data_dict[channel]['DP']['data'][0, :])
+        data_dict[channel]['lidar_range'] = np.arange(total_ranges) * delta_range + offset_range
 
     return data_dict, metadata_dict
