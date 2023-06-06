@@ -1,5 +1,6 @@
 import datetime as dt
 import numpy as np
+import json
 
 
 def read_file(filename):
@@ -207,6 +208,24 @@ def read_dp(line, column_separator):
     sky_background = line.split(column_separator)[-2]
     error_warnings = line.split(column_separator)[-1]
     return id_channel, time, nbr_pulse, profile_duration, out_value_type, after_pulse_corrected, measurements, sky_background, error_warnings
+
+
+def save_to_json(data_dict, metadata_dict, json_file):
+    """
+    Write data_dict and metadata_dict to json file.
+    datetime objects are converted to UNIX timestamp
+    """
+    j = json.dumps({"data_dict": data_dict, "metadata_dict": metadata_dict}, indent=4, default=convert_datetime_to_timestamp)
+    with open(json_file, "w") as f:
+        f.write(j) 
+
+
+def convert_datetime_to_timestamp(obj):
+    """
+    Convert datetime objects to UNIX timestamp
+    """
+    if isinstance(obj, (dt.date, dt.datetime)):
+        return obj.timestamp()
 
 
 if __name__ == "__main__":
