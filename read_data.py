@@ -231,8 +231,12 @@ def convert_object_types_for_json(obj):
         return obj.timestamp()
     elif isinstance(obj, np.ndarray):
         new_obj = []
-        for i in range(np.shape(obj)[0]):
-            new_obj.append(list(obj[i]))
+        if obj.ndim == 2:
+            for i in range(np.shape(obj)[0]):
+                new_obj.append(list(obj[i]))
+        elif obj.ndim == 1:
+            for i in range(np.shape(obj)[0]):
+                new_obj.append(obj[i])
         return new_obj
 
 
