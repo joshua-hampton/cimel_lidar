@@ -1,6 +1,7 @@
 import datetime as dt
 import numpy as np
 import json
+from calibrate_data import calibrate_data
 
 
 def read_file(filename):
@@ -113,6 +114,8 @@ def read_file(filename):
     # remember the data arrays in data_dict[id_channel] have an extra row at the start which should be removed
     for id_channel in data_dict.keys():
         data_dict[id_channel]["DP"]["data"] = data_dict[id_channel]["DP"]["data"][1:,:]
+
+    data_dict, metadata_dict = calibrate_data(data_dict, metadata_dict)
 
     return data_dict, metadata_dict
 
