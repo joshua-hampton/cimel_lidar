@@ -1,5 +1,6 @@
 import datetime as dt
 import numpy as np
+import json
 from calibrate_data import calibrate_data
 
 
@@ -212,7 +213,32 @@ def read_dp(line, column_separator):
     return id_channel, time, nbr_pulse, profile_duration, out_value_type, after_pulse_corrected, measurements, sky_background, error_warnings
 
 
+def save_to_json(data_dict, metadata_dict, json_file):
+    """
+    Write data_dict and metadata_dict to json file.
+    datetime objects are converted to UNIX timestamp
+    """
+    j = json.dumps({"data_dict": data_dict, "metadata_dict": metadata_dict}, indent=4, default=convert_object_types_for_json)
+    with open(json_file, "w") as f:
+        f.write(j) 
+
+
+def convert_object_types_for_json(obj):
+    """
+    Convert datetime objects to UNIX timestamp and numpy arrays to lists
+    """
+    if isinstance(obj, (dt.date, dt.datetime)):
+        return obj.timestamp()
+    elif isinstance(obj, np.ndarray):
+        new_obj = []
+        for i in range(np.shape(obj)[0]):
+            new_obj.append(list(obj[i]))
+        return new_obj
+
+
 if __name__ == "__main__":
     import sys
     filename = sys.argv[1]
-    print(read_file(filename))
+    save_loc = sys.argv[2]
+    d, m = read_file(filename)
+    save_to_json(d, m, f"{save_loc}/{filename.split('/')[-1].replace('.txt','.json')}")
